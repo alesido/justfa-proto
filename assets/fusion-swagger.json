@@ -349,14 +349,14 @@
             "in": "query",
             "description": "Locked filter. True for accounts with locked in ($locked)",
             "required": false,
-            "type": "ref"
+            "type": "string"
           },
           {
             "name": "enabled",
             "in": "query",
             "description": "Enabled filter. True for accounts with enabled in ($enabled)",
             "required": false,
-            "type": "ref"
+            "type": "string"
           },
           {
             "name": "email",
@@ -1365,12 +1365,14 @@
         "parameters": [
           {
             "in": "formData",
-            "name": "request",
-            "description": "Application document request",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/ApplicationDocumentRequest"
-            }
+            "name": "comment",
+            "type": "string"
+          },
+          {
+            "in": "formData",
+            "name": "templateId",
+            "type": "integer",
+            "format": "int64"
           },
           {
             "name": "file",
@@ -1472,12 +1474,25 @@
           },
           {
             "in": "formData",
-            "name": "request",
-            "description": "Application document request",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/UpdateApplicationDocumentRequest"
-            }
+            "name": "comment",
+            "type": "string"
+          },
+          {
+            "in": "formData",
+            "name": "generationSource",
+            "type": "string",
+            "enum": [
+              "FILE_UPLOAD",
+              "TEMPLATE_UPLOAD",
+              "EXTERNAL",
+              "PLATFORM_FILE",
+              "PLATFORM_TEMPLATE"
+            ]
+          },
+          {
+            "in": "formData",
+            "name": "isMajor",
+            "type": "boolean"
           },
           {
             "name": "file",
@@ -1711,14 +1726,14 @@
             "in": "query",
             "description": "True for ATG providers which are support pension",
             "required": false,
-            "type": "ref"
+            "type": "string"
           },
           {
             "name": "active",
             "in": "query",
             "description": "True for ATG providers that are in \"active\" status",
             "required": false,
-            "type": "ref"
+            "type": "string"
           }
         ],
         "responses": {
@@ -1766,14 +1781,14 @@
             "in": "query",
             "description": "True for ATG providers that are in \"active\" status",
             "required": false,
-            "type": "ref"
+            "type": "string"
           },
           {
             "name": "supportsPensions",
             "in": "query",
             "description": "True for ATG providers which are support pension",
             "required": false,
-            "type": "ref"
+            "type": "string"
           },
           {
             "name": "page",
@@ -2007,12 +2022,13 @@
         "parameters": [
           {
             "in": "formData",
-            "name": "request",
-            "description": "request",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/ChatDocumentRequest"
-            }
+            "name": "comment",
+            "type": "string"
+          },
+          {
+            "in": "formData",
+            "name": "recipientId",
+            "type": "string"
           },
           {
             "name": "file",
@@ -2063,7 +2079,7 @@
             "name": "documentId",
             "in": "path",
             "description": "documentId",
-            "required": false,
+            "required": true,
             "type": "string"
           }
         ],
@@ -2423,7 +2439,7 @@
             "in": "query",
             "description": "Indicates whether these are internal accounts",
             "required": false,
-            "type": "ref"
+            "type": "string"
           },
           {
             "name": "page",
@@ -3444,7 +3460,7 @@
             "in": "query",
             "description": "Adviser ID list filter. True for user with adviser ID in $adviserIDs",
             "required": false,
-            "type": "ref"
+            "type": "string"
           },
           {
             "name": "page",
@@ -3573,7 +3589,7 @@
             "in": "query",
             "description": "Invest to model filter",
             "required": false,
-            "type": "ref"
+            "type": "string"
           },
           {
             "name": "status",
@@ -4475,7 +4491,7 @@
             "in": "query",
             "description": "Indicates whether these are internal accounts",
             "required": false,
-            "type": "ref"
+            "type": "string"
           },
           {
             "name": "type",
@@ -6290,7 +6306,7 @@
             "in": "query",
             "description": "Archived filter. True for goals with archived in ($archived)",
             "required": false,
-            "type": "ref"
+            "type": "string"
           },
           {
             "name": "page",
@@ -7504,17 +7520,15 @@
             "name": "type",
             "description": "Document type",
             "required": true,
-            "schema": {
-              "type": "string",
-              "enum": [
-                "PASSPORT",
-                "DRIVING_LICENCE",
-                "UTILITY_BILL",
-                "COUNCIL_TAX",
-                "BANK_BUILDING_SOCIETY_STATEMENT",
-                "BENEFIT_LETTERS"
-              ]
-            }
+            "type": "string",
+            "enum": [
+              "PASSPORT",
+              "DRIVING_LICENCE",
+              "UTILITY_BILL",
+              "COUNCIL_TAX",
+              "BANK_BUILDING_SOCIETY_STATEMENT",
+              "BENEFIT_LETTERS"
+            ]
           },
           {
             "name": "file",
@@ -10323,7 +10337,7 @@
             "in": "query",
             "description": "autoInvest",
             "required": false,
-            "type": "ref"
+            "type": "string"
           },
           {
             "name": "page",
@@ -10745,14 +10759,14 @@
             "name": "minSendDate",
             "in": "path",
             "description": "Min sent date filter. True for communications with sendDate greater than or equal ($minSendDate)",
-            "required": false,
+            "required": true,
             "type": "string"
           },
           {
             "name": "maxSendDate",
             "in": "path",
             "description": "Max sent date filter. True for communications with sendDate greater than or equal ($maxSendDate)",
-            "required": false,
+            "required": true,
             "type": "string"
           },
           {
@@ -11746,7 +11760,7 @@
             "in": "query",
             "description": "Locked filter. True for companies with locked in ($locked)",
             "required": false,
-            "type": "ref"
+            "type": "string"
           },
           {
             "name": "page",
@@ -12088,14 +12102,10 @@
           {
             "in": "formData",
             "name": "type",
-            "description": "Document type",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "enum": [
+            "type": "string",
+            "enum": [
                 "LOGO"
               ]
-            }
           },
           {
             "name": "file",
@@ -13363,7 +13373,7 @@
             "in": "query",
             "description": "Client access filter",
             "required": false,
-            "type": "ref"
+            "type": "string"
           },
           {
             "name": "category",
@@ -13570,14 +13580,14 @@
             "in": "query",
             "description": "Pre-uploadedDocument filter. True for document types that has a pre-uploaded documents",
             "required": false,
-            "type": "ref"
+            "type": "string"
           },
           {
             "name": "excludeCategory",
             "in": "query",
             "description": "Exclude category filter. True for document types with category not equal excludeCategory",
             "required": false,
-            "type": "ref",
+            "type": "string",
             "enum": [
               "MANDATORY_DOCUMENTS",
               "GENERAL",
@@ -14163,12 +14173,73 @@
           },
           {
             "in": "formData",
-            "name": "request",
-            "description": "request",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/DocumentRequest"
-            }
+            "name": "comment",
+            "type": "string"
+          },
+          {
+            "in": "formData",
+            "name": "documentName",
+            "type": "string"
+          },
+          {
+            "in": "formData",
+            "name": "entityId",
+            "type": "string"
+          },
+          {
+            "in": "formData",
+            "name": "entityType",
+            "type": "string",
+            "enum": [
+              "FINANCIAL_REVIEW",
+              "FINANCIAL_REVIEW_GOAL",
+              "COMPANY",
+              "SERVICE",
+              "CLIENT",
+              "CLIENT_ACCOUNT",
+              "TRANSACTION"
+            ]
+          },
+          {
+            "in": "formData",
+            "name": "level",
+            "type": "string",
+            "enum": [
+              "FINANCIAL_REVIEW",
+              "COMPANY",
+              "SERVICE",
+              "ACCOUNT",
+              "REPORTS",
+              "TRANSACTIONS",
+              "PAYMENTS",
+              "PLATFORM",
+              "PENSION",
+              "OTHER"
+            ]
+          },
+          {
+            "in": "formData",
+            "name": "provider",
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 255
+          },
+          {
+            "in": "formData",
+            "name": "signatureType",
+            "type": "string",
+            "enum": [
+              "NO_SIGNATURE",
+              "CONFIRMATION",
+              "DOCU_SIGN",
+              "UPLOAD"
+            ]
+          },
+          {
+            "in": "formData",
+            "name": "typeId",
+            "type": "integer",
+            "format": "int64"
           }
         ],
         "responses": {
@@ -14212,7 +14283,7 @@
             "name": "id",
             "in": "path",
             "description": "id",
-            "required": false,
+            "required": true,
             "type": "string"
           }
         ],
@@ -14491,7 +14562,7 @@
             "name": "id",
             "in": "path",
             "description": "id",
-            "required": false,
+            "required": true,
             "type": "string"
           }
         ],
@@ -14533,7 +14604,7 @@
             "name": "id",
             "in": "path",
             "description": "id",
-            "required": false,
+            "required": true,
             "type": "string"
           }
         ],
@@ -14633,7 +14704,7 @@
             "name": "id",
             "in": "path",
             "description": "id",
-            "required": false,
+            "required": true,
             "type": "string"
           }
         ],
@@ -21752,7 +21823,7 @@
             "name": "id",
             "in": "path",
             "description": "Get payment management for change by id $id",
-            "required": false,
+            "required": true,
             "type": "integer",
             "format": "int64"
           },
@@ -21877,7 +21948,7 @@
             "name": "id",
             "in": "path",
             "description": "Get payment management for change by id $id",
-            "required": false,
+            "required": true,
             "type": "integer",
             "format": "int64"
           },
@@ -22002,7 +22073,7 @@
             "name": "id",
             "in": "path",
             "description": "Get payment management for change by id $id",
-            "required": false,
+            "required": true,
             "type": "integer",
             "format": "int64"
           },
@@ -22067,7 +22138,7 @@
             "name": "id",
             "in": "path",
             "description": "Get payment management by id $id",
-            "required": false,
+            "required": true,
             "type": "integer",
             "format": "int64"
           }
@@ -22118,7 +22189,7 @@
             "name": "id",
             "in": "path",
             "description": "Get payment management for delete by id $id",
-            "required": false,
+            "required": true,
             "type": "integer",
             "format": "int64"
           }
@@ -23391,12 +23462,16 @@
           },
           {
             "in": "formData",
-            "name": "request",
-            "description": "Model portfolio document request",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/ModelPortfolioThemeDocumentRequest"
-            }
+            "name": "comment",
+            "type": "string"
+          },
+          {
+            "in": "formData",
+            "name": "type",
+            "type": "string",
+            "enum": [
+              "FACT_SHEET"
+            ]
           },
           {
             "name": "file",
@@ -23791,12 +23866,16 @@
           },
           {
             "in": "formData",
-            "name": "request",
-            "description": "Model portfolio document request",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/ModelPortfolioDocumentRequest"
-            }
+            "name":"comment",
+            "type": "string"
+          },
+          {
+            "in": "formData",
+            "name": "type",
+            "type": "string",
+            "enum": [
+              "FACT_SHEET"
+            ]
           },
           {
             "name": "file",
@@ -24289,7 +24368,7 @@
             "in": "query",
             "description": "Type filter. True for notification template with type in ($type)",
             "required": false,
-            "type": "ref"
+            "type": "string"
           },
           {
             "name": "name",
@@ -25123,12 +25202,10 @@
             "name": "type",
             "description": "Document type",
             "required": true,
-            "schema": {
-              "type": "string",
-              "enum": [
-                "LOGO"
-              ]
-            }
+            "type": "string",
+            "enum": [
+              "LOGO"
+            ]
           },
           {
             "name": "file",
@@ -25843,7 +25920,7 @@
             "name": "id",
             "in": "path",
             "description": "Get roleType by id $id",
-            "required": false,
+            "required": true,
             "type": "string"
           }
         ],
@@ -27171,7 +27248,7 @@
             "in": "query",
             "description": "Locked filter. True for companies with locked in ($locked)",
             "required": false,
-            "type": "ref"
+            "type": "string"
           },
           {
             "name": "primaryCompanyId",
@@ -27438,7 +27515,7 @@
             "in": "query",
             "description": "Competency id list filter. True for user with competency id in $competencyIDs",
             "required": false,
-            "type": "ref"
+            "type": "string"
           },
           {
             "name": "page",
@@ -27728,12 +27805,10 @@
             "name": "type",
             "description": "Document type",
             "required": true,
-            "schema": {
-              "type": "string",
-              "enum": [
-                "AVATAR"
-              ]
-            }
+            "type": "string",
+            "enum": [
+              "AVATAR"
+            ]
           },
           {
             "name": "file",
