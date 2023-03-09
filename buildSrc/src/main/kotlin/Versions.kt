@@ -1,6 +1,6 @@
 object Versions {
     // Project Level Plugins
-    const val kotlin = "1.6.20"
+    const val kotlin = "1.8.0"
     const val gradle = "7.2.0"
     const val ktLint = "10.3.0"
     const val detekt = "1.19.0"
@@ -17,7 +17,7 @@ object Versions {
     const val kotlinxCoroutines = "1.6.0-native-mt"
     const val kotlinxDateTime = "0.3.2"
     const val napier = "2.4.0"
-    const val ktor = "1.6.7"
+    const val ktor = "2.2.3"
     const val sqlDelight = "1.5.3"
     const val multiplatformSettings = "0.8.1"
     const val kmpNativeCoroutines = "0.12.1-new-mm"
@@ -56,6 +56,8 @@ object Versions {
     const val jUnit = "4.13.2"
     const val truth = "1.1.3"
     const val coroutinesTest = "1.5.0"
+    const val kotest = "5.5.5"
+    const val kotestKoin = "1.1.0"
     const val robolectric = "4.5.1"
     const val jUnitKtx = "1.1.2"
     const val espresso = "3.3.0"
