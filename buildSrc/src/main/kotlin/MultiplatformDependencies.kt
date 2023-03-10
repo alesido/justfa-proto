@@ -1,19 +1,24 @@
 object MultiplatformDependencies {
 
+    // kotlinx
     const val kotlinxCoroutines =
         "org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.kotlinxCoroutines}"
+    const val kotlinxSerialization =
+        "org.jetbrains.kotlinx:kotlinx-serialization-core:${Versions.kotlinxSerialization}"
+    const val kotlinxDateTime = "org.jetbrains.kotlinx:kotlinx-datetime:${Versions.kotlinxDateTime}"
 
+    // koin
     const val koinCore = "io.insert-koin:koin-core:${Versions.koin}"
     const val koinTest = "io.insert-koin:koin-test:${Versions.koin}"
     const val koinTestJUnit4 = "io.insert-koin:koin-test-junit4:${Versions.koin}"
     const val koinTestJUnit5 = "io.insert-koin:koin-test-junit5:${Versions.koin}"
 
+    // kotest
     const val kotest = "io.kotest:kotest-runner-junit5:${Versions.kotest}"
     const val kotestKoin = "io.kotest.extensions:kotest-extensions-koin:${Versions.kotestKoin}"
+    const val slf4j = "org.slf4j:slf4j-simple:${Versions.slf4j}"
 
-    const val kotlinxSerialization =
-        "org.jetbrains.kotlinx:kotlinx-serialization-core:${Versions.kotlinxSerialization}"
-
+    // ktor
     const val ktorCore = "io.ktor:ktor-client-core:Plugins${Versions.ktor}"
     const val ktorEngineCio = "io.ktor:ktor-client-cio:${Versions.ktor}"
     const val ktorSerialization = "io.ktor:ktor-client-serialization:${Versions.ktor}"
@@ -26,16 +31,17 @@ object MultiplatformDependencies {
     const val ktorJvm = "io.ktor:ktor-client-java:${Versions.ktor}"
     const val ktorMock = "io.ktor:ktor-client-mock:${Versions.ktor}"
 
+    // napier (ktor logging)
+    const val napier = "io.github.aakira:napier:${Versions.napier}"
+
+    // sql delight
     const val sqlDelight = "com.squareup.sqldelight:runtime:${Versions.sqlDelight}"
     const val sqlDelightCoroutine =
         "com.squareup.sqldelight:coroutines-extensions:${Versions.sqlDelight}"
     const val sqlDelightAndroid = "com.squareup.sqldelight:android-driver:${Versions.sqlDelight}"
     const val sqlDelightIos = "com.squareup.sqldelight:native-driver:${Versions.sqlDelight}"
 
-    const val napier = "io.github.aakira:napier:${Versions.napier}"
-
-    const val kotlinxDateTime = "org.jetbrains.kotlinx:kotlinx-datetime:${Versions.kotlinxDateTime}"
-
+    // multiplatform settings
     const val multiplatformSettings =
         "com.russhwolf:multiplatform-settings-no-arg:${Versions.multiplatformSettings}"
     const val multiplatformSettingsCoroutines =
