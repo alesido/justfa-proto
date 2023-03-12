@@ -16,7 +16,8 @@ object MultiplatformDependencies {
     // kotest
     const val kotest = "io.kotest:kotest-runner-junit5:${Versions.kotest}"
     const val kotestKoin = "io.kotest.extensions:kotest-extensions-koin:${Versions.kotestKoin}"
-    const val slf4j = "org.slf4j:slf4j-simple:${Versions.slf4j}"
+    const val slf4jApi = "org.slf4j:slf4j-api:${Versions.slf4j}"
+    const val slf4jSimple = "org.slf4j:slf4j-simple:${Versions.slf4j}"
 
     // ktor
     const val ktorCore = "io.ktor:ktor-client-core:Plugins${Versions.ktor}"

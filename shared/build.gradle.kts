@@ -49,7 +49,10 @@ kotlin {
             implementation(MultiplatformDependencies.ktorContentNegotiation)
             implementation(MultiplatformDependencies.ktorLogging)
             implementation(MultiplatformDependencies.ktorClientAuth)
+
             api(MultiplatformDependencies.napier)
+            implementation(MultiplatformDependencies.slf4jApi)
+            implementation(MultiplatformDependencies.slf4jSimple)
 
             api(MultiplatformDependencies.koinCore)
         }
@@ -57,7 +60,8 @@ kotlin {
         sourceSets["test"].dependencies {
             implementation(kotlin("test"))
             implementation(MultiplatformDependencies.koinTest)
-            implementation(MultiplatformDependencies.slf4j)
+            implementation(MultiplatformDependencies.slf4jApi)
+            implementation(MultiplatformDependencies.slf4jSimple)
             implementation(MultiplatformDependencies.ktorMock)
             implementation(MultiplatformDependencies.kotlinxTestResources)
             implementation(MultiplatformDependencies.kotlinxCoroutinesTest)

@@ -70,7 +70,7 @@ object Versions {
     // Test Libraries
     const val jUnit = "4.13.2"
     const val coroutinesTest = "1.5.0"
-    const val slf4j = "1.7.26"
+    const val slf4j = "2.0.6"
     const val kotest = "5.5.5"
     const val kotestKoin = "1.1.0"
     const val robolectric = "4.5.1"

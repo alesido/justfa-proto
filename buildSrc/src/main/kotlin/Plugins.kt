@@ -13,6 +13,7 @@ object Plugins {
 
     const val androidApplication = "com.android.application"
     const val android = "android"
+    const val androidKotlin = "org.jetbrains.kotlin.android"
 
     const val crashlytics = "com.google.firebase.crashlytics"
     const val appDistribution = "com.google.firebase.appdistribution"
