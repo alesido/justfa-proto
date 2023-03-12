@@ -84,6 +84,9 @@ dependencies {
     implementation(AndroidDependencies.viewModelLifecycle)
     implementation(AndroidDependencies.appCompat)
 
+    implementation(AndroidDependencies.koinAndroid)
+    implementation(AndroidDependencies.koinCompose)
+
     implementation(AndroidDependencies.constraintLayout)
 
     // jetpack compose, core

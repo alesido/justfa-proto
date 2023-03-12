@@ -32,11 +32,33 @@ import com.fusion.android.framework.findActivity
 import com.fusion.android.theme.Capitana
 import com.fusion.android.theme.JBlue
 import com.fusion.android.theme.JustFaStarterTheme
+import com.fusion.shared.presenters.user.session.UserSessionPresenter
+import com.fusion.shared.presenters.user.session.UserSessionStage.*
+import kotlinx.coroutines.flow.collectLatest
+import org.koin.androidx.compose.get
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginPage() {
+fun LoginPage(
+    userSessionViewModel: UserSessionPresenter = get()  // koin-injected
+) {
     val context = LocalContext.current
+
+    LaunchedEffect(key1 = userSessionViewModel) {
+        userSessionViewModel.sessionStateFlow.collectLatest {
+            when (it.stage) {
+                INITIAL -> {}
+                AUTHORIZATION -> TODO()
+                ESTABLISHED -> {
+                    context.findActivity()?.let { a ->
+                        ConversationActivity.start(a)
+                        a.finish()
+                    }
+                }
+                FAILED -> TODO()
+            }
+        }
+    }
 
     var functionalityNotAvailablePopupShown by remember { mutableStateOf(false) }
     if (functionalityNotAvailablePopupShown) {
@@ -55,7 +77,7 @@ fun LoginPage() {
         val password = remember { mutableStateOf(TextFieldValue()) }
         val focusManager = LocalFocusManager.current
 
-        Text(text = "Please log in to your JustFA account with your e-mail and password",
+        Text(text = "Please sign in to your JustFA account with your e-mail and password",
             style = TextStyle(fontSize = 16.sp, fontFamily = Capitana),
             modifier = Modifier.padding(40.dp, 40.dp, 40.dp, 0.dp)
         )
@@ -85,8 +107,8 @@ fun LoginPage() {
             Button(
                 onClick = {
                     context.findActivity()?.let {
-                        ConversationActivity.start(it)
-                        it.finish()
+                        userSessionViewModel.login(
+                            username.value.text, password.value.text)
                     }
                 },
                 shape = RoundedCornerShape(8.dp),
