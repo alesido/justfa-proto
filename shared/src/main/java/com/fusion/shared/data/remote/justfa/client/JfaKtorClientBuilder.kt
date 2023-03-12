@@ -41,11 +41,30 @@ fun buildKtorClient(bearerTokenStorage: BearerTokenStorage, enableNetworkLogs: B
 
         // TODO response validation/error management
         // see https://ktor.io/docs/response-validation.html
+        expectSuccess = true
+        HttpResponseValidator {
+            // 2xx HTTP response code case
+            validateResponse { response ->
+//                val error: Error = response.body()
+//                if (error.code != 0) {
+//                    throw CustomResponseException(response, "Code: ${error.code}, message: ${error.message}")
+//                }
+            }
+            // non 2xx HTTP response code case
+            handleResponseExceptionWithRequest { exception, request ->
+//                val clientException = exception as? ClientRequestException ?: return@handleResponseExceptionWithRequest
+//                val exceptionResponse = clientException.response
+//                if (exceptionResponse.status == HttpStatusCode.NotFound) {
+//                    val exceptionResponseText = exceptionResponse.bodyAsText()
+//                    throw MissingPageException(exceptionResponse, exceptionResponseText)
+//                }
+            }
+        }
 
         // logging
         if (enableNetworkLogs) {
             install(Logging) {
-                level = LogLevel.HEADERS
+                level = LogLevel.BODY
                 logger = object : Logger {
                     override fun log(message: String) {
                         Napier.d(tag = "### Ktor ", message = message)
