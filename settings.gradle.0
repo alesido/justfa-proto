@@ -15,4 +15,3 @@ dependencyResolutionManagement {
 rootProject.name = "JustFaAndroid"
 include ':app'
 include ':shared'
-include ':swagger_kotlin_generated'
