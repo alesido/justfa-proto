@@ -10,7 +10,7 @@ import io.ktor.client.plugins.auth.providers.*
 import io.ktor.client.request.forms.*
 import io.ktor.http.*
 
-class AuthServiceSimple(val httpClient: HttpClient, val bearerTokenStorage: BearerTokenStorage) {
+class JfaAuthServiceSimple(val httpClient: HttpClient, val bearerTokenStorage: BearerTokenStorage) {
 
     suspend fun authorize(userName: String, password: String): String {
 

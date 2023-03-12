@@ -1,6 +1,6 @@
 package com.fusion.shared
 
-import com.fusion.shared.data.remote.justfa.api.auth.simple.AuthServiceSimple
+import com.fusion.shared.data.remote.justfa.api.auth.simple.JfaAuthServiceSimple
 import com.fusion.shared.data.remote.framework.oauth.BearerTokenStorage
 import com.fusion.shared.di.sharedModule
 import kotlinx.coroutines.runBlocking
@@ -16,7 +16,7 @@ class AuthServiceSimpleTests : KoinTest {
         startKoin {
             modules(sharedModule(true))
         }
-        val authService = get<AuthServiceSimple>()
+        val authService = get<JfaAuthServiceSimple>()
         val bearerTokenStorage = get<BearerTokenStorage>()
 
         runBlocking {

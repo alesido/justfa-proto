@@ -1,7 +1,7 @@
 package com.fusion.shared.data.remote.justfa.repositories
 
 import com.fusion.shared.data.remote.justfa.api.account.JfaAccountApi
-import com.fusion.shared.data.remote.justfa.api.auth.simple.AuthServiceSimple
+import com.fusion.shared.data.remote.justfa.api.auth.simple.JfaAuthServiceSimple
 import com.fusion.shared.data.remote.justfa.repositories.mappers.toDomain
 import com.fusion.shared.domain.models.Account
 import com.fusion.shared.domain.repositories.AccountService
@@ -19,7 +19,7 @@ class JfaAccountService: AccountService, KoinComponent {
      * It is supposed that the Auth Service have to be accessible by other services
      * and repositories, so it is Single DI component.
      */
-    private val authService: AuthServiceSimple by inject()
+    private val authService: JfaAuthServiceSimple by inject()
 
     private val accountApi = JfaAccountApi()
 
