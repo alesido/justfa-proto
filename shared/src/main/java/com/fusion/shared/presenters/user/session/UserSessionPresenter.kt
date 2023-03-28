@@ -27,8 +27,8 @@ class UserSessionPresenter(val accountService: AccountService): KoinComponent {
     //@NativeCoroutineScope
     private val viewModelScope = CoroutineScope(Dispatchers.Default)
 
-    private val _sessionStateFlow = MutableStateFlow(UserSessionState.initial())
     val sessionStateFlow get() = _sessionStateFlow.asStateFlow()
+    private val _sessionStateFlow = MutableStateFlow(UserSessionState.initial())
 
     fun login(loginName: String, password: String) {
         viewModelScope.launch {
