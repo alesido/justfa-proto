@@ -26,6 +26,7 @@ object MultiplatformDependencies {
     const val ktorJsonSerialization = "io.ktor:ktor-serialization-kotlinx-json:${Versions.ktor}"
     const val ktorContentNegotiation = "io.ktor:ktor-client-content-negotiation:${Versions.ktor}"
     const val ktorClientAuth = "io.ktor:ktor-client-auth:${Versions.ktor}"
+    const val ktorWebSockets = "io.ktor:ktor-client-websockets:${Versions.ktor}"
     const val ktorLogging = "io.ktor:ktor-client-logging:${Versions.ktor}"
     const val ktorAndroid = "io.ktor:ktor-client-android:${Versions.ktor}"
     const val ktoriOS = "io.ktor:ktor-client-ios:${Versions.ktor}"

@@ -47,6 +47,7 @@ kotlin {
             implementation(MultiplatformDependencies.ktorEngineCio)
             implementation(MultiplatformDependencies.ktorJsonSerialization)
             implementation(MultiplatformDependencies.ktorContentNegotiation)
+            implementation(MultiplatformDependencies.ktorWebSockets)
             implementation(MultiplatformDependencies.ktorLogging)
             implementation(MultiplatformDependencies.ktorClientAuth)
 

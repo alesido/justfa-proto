@@ -10,6 +10,7 @@ import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.logging.*
+import io.ktor.client.plugins.websocket.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.http.ContentType.Application.Cbor
@@ -86,6 +87,9 @@ fun buildKtorClient(bearerTokenStorage: BearerTokenStorage, enableNetworkLogs: B
                 ignoreUnknownKeys = true
             })
         }
+
+        // web sockets support
+        install(WebSockets)
     }
 }
 
