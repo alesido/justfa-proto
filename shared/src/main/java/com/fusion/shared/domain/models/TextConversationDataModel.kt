@@ -1,12 +1,14 @@
 package com.fusion.shared.domain.models
 
+import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import java.util.*
 
 data class TextConversationMessage (
-    val messageId: String,
-    val timeStamp: Instant,
+    val messageId: String = UUID.randomUUID().toString().substring(2),
+    val timeStamp: Instant = Clock.System.now(),
 
     val senderId: String,
     val senderName: String,

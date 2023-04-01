@@ -2,14 +2,11 @@
 
 package com.fusion.android.conversation
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
@@ -19,31 +16,29 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.LastBaseline
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.launch
 import com.fusion.android.R
 import com.fusion.android.components.JustFaAppBar
-import com.fusion.android.data.exampleUiState
 import com.fusion.android.framework.FunctionalityNotAvailablePopup
 import com.fusion.android.theme.JustFaStarterTheme
+import com.fusion.shared.domain.models.TextConversationMessage
+import com.fusion.shared.presenters.conversation.text.TextConversationState
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ConversationPage(
-    state: WsConversationState,
+    state: TextConversationState,
     modifier: Modifier = Modifier,
-    onMessageSubmitted: (message: WsMessage) -> Unit = { },
+    onMessageSubmitted: (message: String) -> Unit = { },
 ) {
     val authorMe = stringResource(R.string.author_me)
 
@@ -65,9 +60,8 @@ fun ConversationPage(
                     scrollState = scrollState
                 )
                 UserInput(
-                    onMessageSent = { content ->
-                        val message = WsMessage(authorMe, content, System.currentTimeMillis())
-                        onMessageSubmitted(message)
+                    onMessageSent = {
+                        onMessageSubmitted(it)
                     },
                     resetScroll = {
                         scope.launch {
@@ -83,8 +77,8 @@ fun ConversationPage(
             }
             // Channel name bar floats above the messages
             ChannelNameBar(
-                channelName = state.channelName,
-                channelMembers = state.channelMembers,
+                channelName = state.title?: "",
+                channelMembers = state.participants?.size?: 0,
                 scrollBehavior = scrollBehavior,
             )
         }
@@ -152,7 +146,8 @@ const val ConversationTestTag = "ConversationTestTag"
 
 @Composable
 fun Messages(
-    messages: List<WsMessage>,
+    author: String,
+    messages: List<TextConversationMessage>,
     scrollState: LazyListState,
     modifier: Modifier = Modifier
 ) {
@@ -173,11 +168,11 @@ fun Messages(
                 .fillMaxSize()
         ) {
             for (index in messages.indices) {
-                val prevAuthor = messages.getOrNull(index - 1)?.author
-                val nextAuthor = messages.getOrNull(index + 1)?.author
+                val prevAuthor = messages.getOrNull(index - 1)?.senderName
+                val nextAuthor = messages.getOrNull(index + 1)?.senderName
                 val content = messages[index]
-                val isFirstMessageByAuthor = prevAuthor != content.author
-                val isLastMessageByAuthor = nextAuthor != content.author
+                val isFirstMessageByAuthor = prevAuthor != content.senderName
+                val isLastMessageByAuthor = nextAuthor != content.senderName
 
                 // Hardcode day dividers for simplicity
                 if (index == messages.size - 1) {
@@ -193,8 +188,8 @@ fun Messages(
                 item {
                     Message(
                         onAuthorClick = {  },
-                        msg = content,
-                        isUserMe = content.author == authorMe,
+                        message = content,
+                        isSenderMe = content.senderName == author,
                         isFirstMessageByAuthor = isFirstMessageByAuthor,
                         isLastMessageByAuthor = isLastMessageByAuthor
                     )
@@ -232,8 +227,8 @@ fun Messages(
 @Composable
 fun Message(
     onAuthorClick: (String) -> Unit,
-    msg: WsMessage,
-    isUserMe: Boolean,
+    message: TextConversationMessage,
+    isSenderMe: Boolean,
     isFirstMessageByAuthor: Boolean,
     isLastMessageByAuthor: Boolean
 ) {
@@ -265,8 +260,8 @@ fun Message(
             Spacer(modifier = Modifier.width(74.dp))
         }
         AuthorAndTextMessage(
-            msg = msg,
-            isUserMe = isUserMe,
+            msg = message,
+            isSenderMe = isSenderMe,
             isFirstMessageByAuthor = isFirstMessageByAuthor,
             isLastMessageByAuthor = isLastMessageByAuthor,
             authorClicked = onAuthorClick,
@@ -279,8 +274,8 @@ fun Message(
 
 @Composable
 fun AuthorAndTextMessage(
-    msg: WsMessage,
-    isUserMe: Boolean,
+    msg: TextConversationMessage,
+    isSenderMe: Boolean,
     isFirstMessageByAuthor: Boolean,
     isLastMessageByAuthor: Boolean,
     authorClicked: (String) -> Unit,
@@ -302,11 +297,11 @@ fun AuthorAndTextMessage(
 }
 
 @Composable
-private fun AuthorNameTimestamp(msg: WsMessage) {
+private fun AuthorNameTimestamp(msg: TextConversationMessage, isSenderMe: Boolean) {
     // Combine author and timestamp for a11y.
     Row(modifier = Modifier.semantics(mergeDescendants = true) {}) {
         Text(
-            text = msg.author,
+            text = if (isSenderMe) stringResource(id = R.string.author_me) else msg.senderName,
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier
                 .alignBy(LastBaseline)
@@ -354,7 +349,7 @@ private fun RowScope.DayHeaderLine() {
 
 @Composable
 fun ChatItemBubble(
-    message: WsMessage,
+    message: TextConversationMessage,
     isUserMe: Boolean,
     authorClicked: (String) -> Unit
 ) {
@@ -376,27 +371,12 @@ fun ChatItemBubble(
                 authorClicked = authorClicked
             )
         }
-
-        message.image?.let {
-            Spacer(modifier = Modifier.height(4.dp))
-            Surface(
-                color = backgroundBubbleColor,
-                shape = ChatBubbleShape
-            ) {
-                Image(
-                    painter = painterResource(it),
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier.size(160.dp),
-                    contentDescription = stringResource(id = R.string.attached_image)
-                )
-            }
-        }
     }
 }
 
 @Composable
 fun ClickableMessage(
-    message: WsMessage,
+    message: TextConversationMessage,
     isUserMe: Boolean,
     authorClicked: (String) -> Unit
 ) {

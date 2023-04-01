@@ -23,12 +23,17 @@ class JfaAccountService: AccountService, KoinComponent {
 
     private val accountApi = JfaAccountApi()
 
+    private var currentAuthorizedAccount: Account? = null
+
     override suspend fun login(username: String, password: String): Flow<Account?> {
         authService.authorize(username, password)
-        return flowOf(accountApi.getAccount().toDomain())
+        currentAuthorizedAccount = accountApi.getAccount().toDomain()
+        return flowOf(currentAuthorizedAccount)
     }
 
     override suspend fun authorise(): Flow<Account?> {
         TODO("Not yet implemented")
     }
+
+    override suspend fun currentAccount(): Account? = currentAuthorizedAccount
 }

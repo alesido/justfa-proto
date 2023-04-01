@@ -104,23 +104,40 @@ class TextConversationPresenter: KoinComponent {
 
     fun onMessageSubmitted(message: TextConversationMessage) {
         viewModelScope.launch {
-            com.fusion.shared.framework.resultOf {
-                textConversationService.sendMessage(message)
-            }.onSuccess {
-                _conversationFlow.value.addMessage(message)
-            }.onFailure {
-                _conversationFlow.value = _conversationFlow.value.copy(
-                    stage = TextConversationStage.FAILURE,
-                    error = it.message
-                )
-            }
+            resultOf {
+                accountService.currentAccount()
+            }.onSuccess { currentAccount ->
+                currentAccount?.let { senderAccount ->
+                    sendMessage(TextConversationMessage(
+                        senderId = senderAccount.id,
+                        senderName = senderAccount.person.name,
+                        content = messageText
+                    ))
+                }?: {
+                    onError("Your are not authorized to send messages at the moment!")
+                }
+            }.onFailure { onError(it) }
         }
     }
+
+    private suspend fun sendMessage(message: TextConversationMessage) = resultOf {
+        textConversationService.sendMessage(message)
+    }.onSuccess {
+        _conversationFlow.value = _conversationFlow.value.withInsertedMessage(message)
+    }.onFailure { onError(it) }
 
     private fun onError(e: Throwable) {
         _conversationFlow.value = _conversationFlow.value.copy(
             stage = TextConversationStage.FAILURE,
             error = e.message.toString()
+        )
+    }
+
+    private fun onError(messageText: String) {
+        Napier.d(tag = this.javaClass.simpleName, message = "### Failure: $messageText")
+        _conversationFlow.value = _conversationFlow.value.copy(
+            stage = FAILURE,
+            error = messageText
         )
     }
 }

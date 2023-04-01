@@ -27,4 +27,7 @@ interface AccountService {
      * by an external application via its authorization UI.
      */
     suspend fun authorise(): Flow<Account?>
+
+
+    suspend fun currentAccount(): Account?
 }

@@ -6,23 +6,20 @@ import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.view.WindowCompat
-import com.fusion.android.data.exampleUiState
 import com.fusion.android.theme.JustFaStarterTheme
+import com.fusion.shared.presenters.conversation.text.TextConversationPresenter
+import com.fusion.shared.presenters.conversation.text.TextConversationStage
+import org.koin.androidx.compose.get
 
 class ConversationActivity : ComponentActivity() {
-
-    private val viewModel by viewModels<ConversationViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,23 +42,19 @@ class ConversationActivity : ComponentActivity() {
                     ) {
                         //setSystemBarsColor(color = Color.White) -- FIXME correct system bar color for light/dark theme
 
-                        val wsConversationState by viewModel.conversationFlow.collectAsState()
-                        when(wsConversationState.screen) {
+                        val viewModel : TextConversationPresenter = get()
 
-                            DestinationScreen.CONVERSATION_SETUP_SCREEN -> {
-                                ConversationSetupPage(onSubmit = { ip, port ->
-                                    viewModel.onServerAddressProvided(ip, port)
-                                })
+                        val conversationState by viewModel.conversationFlow.collectAsState()
+                        when(conversationState.stage) {
+
+                            TextConversationStage.INITIAL, TextConversationStage.STARTING -> {
+                                ProgressScreen("Starting up ...")
                             }
 
-                            DestinationScreen.PROGRESS_SCREEN -> {
-                                ProgressScreen(wsConversationState.connection.text)
-                            }
-
-                            DestinationScreen.CONVERSATION_SCREEN -> {
+                            TextConversationStage.READY -> {
                                 ConversationPage(
-                                    state = wsConversationState,
-                                    onMessageSubmitted = viewModel::omMessageSubmitted,
+                                    state = conversationState,
+                                    onMessageSubmitted = viewModel::onMessageSubmitted,
                                     modifier = Modifier.windowInsetsPadding(
                                         WindowInsets.navigationBars
                                             .only(WindowInsetsSides.Horizontal
@@ -70,14 +63,14 @@ class ConversationActivity : ComponentActivity() {
                                 )
                             }
 
-                            DestinationScreen.FAILURE_SCREEN -> {
+                            TextConversationStage.FAILURE -> {
                                 FailureScreen(
-                                    wsConversationState.connection.text,
-                                    configure = { viewModel.configure() },
-                                    retry = { viewModel.retry() })
+                                    conversationState.error, // TODO Add failure screen text
+                                    configure = { },
+                                    retry = { })
                             }
 
-                            DestinationScreen.CLOSED_SCREEN -> {
+                            TextConversationStage.CLOSED -> {
                                 ConversationClosedScreen()
                             }
                         }
@@ -87,6 +80,9 @@ class ConversationActivity : ComponentActivity() {
         }
     }
 
+/**
+ * TODO Close conversation session on activity stop shutdown on destroy.
+ *
     override fun onStop() {
         super.onStop()
         viewModel.closeConversation()
@@ -96,7 +92,7 @@ class ConversationActivity : ComponentActivity() {
         super.onDestroy()
         viewModel.shutdown()
     }
-
+*/
     companion object {
         fun start(activity: Activity) {
             activity.startActivity(
@@ -105,7 +101,7 @@ class ConversationActivity : ComponentActivity() {
         }
     }
 }
-
+/** TODO Add conversation screen preview
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
@@ -115,3 +111,4 @@ fun DefaultPreview() {
         )
     }
 }
+*/
