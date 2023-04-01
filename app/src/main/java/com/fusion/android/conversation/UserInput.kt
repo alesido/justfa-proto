@@ -43,6 +43,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -141,6 +142,14 @@ fun UserInput(
             UserInputText(
                 textFieldValue = textState,
                 onTextChanged = { textState = it },
+                onMessageSent = {
+                    onMessageSent(textState.text)
+                    // Reset text field and close keyboard
+                    textState = TextFieldValue()
+                    // Move scroll to bottom
+                    resetScroll()
+                    dismissKeyboard()
+                },
                 // Only show the keyboard if there's no input selector and text field has focus
                 keyboardShown = currentInputSelector == InputSelector.NONE && textFieldFocusState,
                 // Close extended selector if text field receives focus
@@ -151,7 +160,7 @@ fun UserInput(
                     }
                     textFieldFocusState = focused
                 },
-                focusState = textFieldFocusState
+                focusState = textFieldFocusState,
             )
             UserInputSelector(
                 onSelectorChange = { currentInputSelector = it },
@@ -373,6 +382,7 @@ var SemanticsPropertyReceiver.keyboardShownProperty by KeyboardShownKey
 private fun UserInputText(
     keyboardType: KeyboardType = KeyboardType.Text,
     onTextChanged: (TextFieldValue) -> Unit,
+    onMessageSent: () -> Unit,
     textFieldValue: TextFieldValue,
     keyboardShown: Boolean,
     onTextFieldFocused: (Boolean) -> Unit,
@@ -413,6 +423,9 @@ private fun UserInputText(
                     keyboardOptions = KeyboardOptions(
                         keyboardType = keyboardType,
                         imeAction = ImeAction.Send
+                    ),
+                    keyboardActions = KeyboardActions (
+                        onSend = { onMessageSent() }
                     ),
                     maxLines = 1,
                     cursorBrush = SolidColor(LocalContentColor.current),
