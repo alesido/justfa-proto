@@ -7,26 +7,21 @@ enum class TextConversationStage {
     INITIAL, STARTING, READY, FAILURE, CLOSED
 }
 
-enum class TextConversationScreen {
-    STARTING, PROGRESS, CONVERSATION, FAILURE,
-}
-
 data class TextConversationState(
     val stage: TextConversationStage = TextConversationStage.INITIAL,
+    val title: String? = null,
+    val author: String? = null,
     val participants: List<TextConversationParticipant>? = null,
-    val screen: TextConversationScreen = TextConversationScreen.STARTING,
+    val messages: List<TextConversationMessage> = listOf(),
     val error: String? = null
 ) {
-    private val _messages: MutableList<TextConversationMessage> = mutableListOf()
-    val messages: List<TextConversationMessage> = _messages
+    fun withInsertedMessage(message: TextConversationMessage) = this.copy(
+            messages = listOf(message) + this.messages
+        )
 
-    fun addMessage(message: TextConversationMessage) {
-        _messages.add(0, message) // Add to the beginning of the list
-    }
-
-    fun addMessages(messages: List<TextConversationMessage>) {
-        _messages.addAll(messages)
-    }
+    fun withInsertedMessages(messages: List<TextConversationMessage>) = this.copy(
+        messages = messages + this.messages
+    )
 
     companion object {
         fun initial() = TextConversationState()
