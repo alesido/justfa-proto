@@ -40,7 +40,7 @@ fun ConversationPage(
     modifier: Modifier = Modifier,
     onMessageSubmitted: (message: String) -> Unit = { },
 ) {
-    val authorMe = stringResource(R.string.author_me)
+    val author = state.author?: ""
 
     val scrollState = rememberLazyListState()
     val topBarState = rememberTopAppBarState()
@@ -55,6 +55,7 @@ fun ConversationPage(
                     .nestedScroll(scrollBehavior.nestedScrollConnection)
             ) {
                 Messages(
+                    author = author,
                     messages = state.messages,
                     modifier = Modifier.weight(1f),
                     scrollState = scrollState
@@ -70,9 +71,10 @@ fun ConversationPage(
                     },
                     // Use navigationBarsPadding() imePadding() and , to move the input panel above both the
                     // navigation bar, and on-screen keyboard (IME)
-                    modifier = Modifier
-                        .navigationBarsPadding()
-                        .imePadding(),
+                    // TODO Fix too big padding, of IMEI or Navigation Bars
+//                    modifier = Modifier
+//                        .navigationBarsPadding()
+//                        .imePadding(),
                 )
             }
             // Channel name bar floats above the messages
@@ -108,13 +110,12 @@ fun ChannelNameBar(
                     text = channelName,
                     style = MaterialTheme.typography.titleMedium
                 )
-                /*
                 // Number of members
                 Text(
                     text = stringResource(R.string.members, channelMembers),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
-                ) */
+                )
             }
         },
         actions = {
@@ -154,7 +155,6 @@ fun Messages(
     val scope = rememberCoroutineScope()
     Box(modifier = modifier) {
 
-        val authorMe = stringResource(id = R.string.author_me)
         LazyColumn(
             reverseLayout = true,
             state = scrollState,
@@ -232,31 +232,9 @@ fun Message(
     isFirstMessageByAuthor: Boolean,
     isLastMessageByAuthor: Boolean
 ) {
-    val borderColor = if (isUserMe) {
-        MaterialTheme.colorScheme.primary
-    } else {
-        MaterialTheme.colorScheme.tertiary
-    }
-
     val spaceBetweenAuthors = if (isLastMessageByAuthor) Modifier.padding(top = 8.dp) else Modifier
     Row(modifier = spaceBetweenAuthors) {
-        if (isLastMessageByAuthor) {
-            // Avatar
-            Image(
-                modifier = Modifier
-                    .clickable(onClick = { onAuthorClick(msg.author) })
-                    .padding(horizontal = 16.dp)
-                    .size(42.dp)
-                    .border(1.5.dp, borderColor, CircleShape)
-                    .border(3.dp, MaterialTheme.colorScheme.surface, CircleShape)
-                    .clip(CircleShape)
-                    .align(Alignment.Top),
-                painter = painterResource(id = msg.authorImage),
-                contentScale = ContentScale.Crop,
-                contentDescription = null,
-            )
-        } else {
-            // Space under avatar
+        if (! isLastMessageByAuthor) {
             Spacer(modifier = Modifier.width(74.dp))
         }
         AuthorAndTextMessage(
@@ -283,9 +261,9 @@ fun AuthorAndTextMessage(
 ) {
     Column(modifier = modifier) {
         if (isLastMessageByAuthor) {
-            AuthorNameTimestamp(msg)
+            AuthorNameTimestamp(msg, isSenderMe)
         }
-        ChatItemBubble(msg, isUserMe, authorClicked = authorClicked)
+        ChatItemBubble(msg, isSenderMe, authorClicked = authorClicked)
         if (isFirstMessageByAuthor) {
             // Last bubble before next author
             Spacer(modifier = Modifier.height(8.dp))
@@ -309,7 +287,7 @@ private fun AuthorNameTimestamp(msg: TextConversationMessage, isSenderMe: Boolea
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text(
-            text = msg.timeFormatted?: "--:--",
+            text = msg.timeFormatted,
             style = MaterialTheme.typography.bodySmall,
             modifier = Modifier.alignBy(LastBaseline),
             color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -411,7 +389,7 @@ fun ClickableMessage(
 fun ConversationPagePreview() {
     JustFaStarterTheme {
         ConversationPage(
-            state = exampleUiState,
+            state = TextConversationState.initial(),
         )
     }
 }
@@ -420,7 +398,7 @@ fun ConversationPagePreview() {
 @Composable
 fun ChannelBarPrev() {
     JustFaStarterTheme {
-        ChannelNameBar(channelName = "A Channel", channelMembers = 52)
+        ChannelNameBar(channelName = "A Channel", channelMembers = 2)
     }
 }
 

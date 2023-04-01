@@ -2,6 +2,7 @@ package com.fusion.shared.data.remote.justfa.wsapi
 
 import com.fusion.shared.data.remote.framework.oauth.BearerTokenStorage
 import com.fusion.shared.data.remote.justfa.api.JfaApiConfiguration
+import io.github.aakira.napier.Napier
 import io.ktor.client.*
 import io.ktor.client.plugins.websocket.*
 import io.ktor.http.*
@@ -59,6 +60,8 @@ class JfaWebSocketChannel: KoinComponent {
         return Result.success(true)
     }
 
+    fun isActive() = session?.isActive == true
+
     suspend fun closeSession() {
         session?.close()
     }
@@ -67,7 +70,10 @@ class JfaWebSocketChannel: KoinComponent {
      * It's supposed that only text messages supported.
      */
     suspend fun sendTextMessage(text: String) {
-        session?.send(Frame.Text(text))
+        session?.let {
+            it.send(Frame.Text(text))
+            Napier.d(tag = this.javaClass.simpleName, message = "### Outgoing message \"$text\"")
+        }
     }
 
     /**
@@ -79,8 +85,10 @@ class JfaWebSocketChannel: KoinComponent {
         session?.incoming?.consumeEach {
             try {
                 val text = (it as? Frame.Text)?.readText() ?: ""
-                if (text.isNotEmpty())
+                if (text.isNotEmpty()) {
+                    Napier.d(tag = this.javaClass.simpleName, message = "### Incoming message \"$text\"")
                     _incomingTextMessagesFlow.value = Result.success(text)
+                }
             }
             catch (e: CancellationException) { throw e }
             catch (e: Exception) {

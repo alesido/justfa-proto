@@ -18,14 +18,14 @@ object JfaApiConfiguration {
     const val API_BASE_URL = "$API_PROTOCOL_NAME://$API_HOST:$API_PROTOCOL_PORT$API_PATH"
 
     // Web Sockets, Staging
-//    const val WS_PORT = 8080
-//    const val WS_HOST = "dev.lno.fam-intra"
-//    private const val WS_PATH = "/chat"
+    const val WS_PORT = 8080
+    const val WS_HOST = "dev.lno.fam-intra"
+    private const val WS_PATH = "/chat"
 
     // Web Sockets, Debugging
-    const val WS_PORT = 8082
-    const val WS_HOST = "localhost"
-    private const val WS_PATH = ""
+//    const val WS_PORT = 8082
+//    const val WS_HOST = "localhost"
+//    private const val WS_PATH = ""
 
 
     fun wsPathPrefix(accessToken: String?) = accessToken?.let {

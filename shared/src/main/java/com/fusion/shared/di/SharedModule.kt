@@ -4,6 +4,7 @@ import com.fusion.shared.data.remote.justfa.api.auth.simple.JfaAuthServiceSimple
 import com.fusion.shared.data.remote.justfa.client.buildKtorClient
 import com.fusion.shared.data.remote.framework.oauth.BearerTokenStorage
 import com.fusion.shared.data.remote.justfa.repositories.JfaAccountService
+import com.fusion.shared.data.remote.justfa.repositories.JfaTextConversationService
 import com.fusion.shared.data.remote.justfa.wsapi.JfaCommunicationCenterService
 import com.fusion.shared.data.remote.justfa.wsapi.JfaWebSocketChannel
 import com.fusion.shared.domain.repositories.AccountService
@@ -36,10 +37,12 @@ fun sharedModule(enableNetworkLogs: Boolean) = module {
         JfaAccountService() as AccountService
     }
 
-    // domain module, to be separated to
+    single {
+        JfaCommunicationCenterService() as CommunicationCenterService
+    }
 
     single {
-        JfaCommunicationCenterService()
+        JfaTextConversationService() as TextConversationService
     }
 
     // presentation module, to be separated to and exported to UI

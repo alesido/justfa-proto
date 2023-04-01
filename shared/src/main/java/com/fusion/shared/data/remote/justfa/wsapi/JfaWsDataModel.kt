@@ -4,17 +4,23 @@ import com.fusion.shared.domain.models.PersonOnlineStatus
 import com.fusion.shared.domain.models.PersonRole
 import com.fusion.shared.domain.models.TextConversationMessage
 import com.fusion.shared.domain.models.TextConversationParticipant
+import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
+import java.time.format.DateTimeFormatter
 
 enum class JfaWsEventType {
 
     CHAT_USER_MESSAGE,
 
     USER_CONNECTION,
+    USER_ACTIVATE,
 
     USERS_LIST,
     USERS_LIST_REQUEST,
-    USER_ACTIVATE,
 
     SCREEN_SHARE_RESPONSE,
 
@@ -36,6 +42,9 @@ enum class JfaWsPayloadDataType {
     USERS_LIST_REQUEST_DATA,
     USERS_LIST_DATA,
 
+    USER_CONNECTION_DATA,
+    USER_ACTIVATE_DATA,
+
     DOCUMENT_DATA,
     SCREEN_SHARE_REQUEST_DATA,
 
@@ -56,11 +65,23 @@ enum class JfaWsRoleType {
     COMPANY_ADMINISTRATOR,
     ADVISER,
     SUPPORT,
-    ASSISTANT
+    ASSISTANT;
+
+    fun toDomain() = try { PersonRole.valueOf(this.name) }
+        catch (_: Throwable) { PersonRole.ADVISER }
 }
 
 enum class JfaWsParticipantConnectionStatus {
-    OPEN, CLOSE, BUSY
+    OPEN, CLOSE, BUSY;
+    fun toDomain() = when(this) {
+        OPEN -> PersonOnlineStatus.OPEN
+        BUSY -> PersonOnlineStatus.BUSY
+        CLOSE -> PersonOnlineStatus.OFFLINE
+    }
+}
+
+enum class JfaWsTextMessageStatus {
+    UNREAD, READ
 }
 
 @Serializable
@@ -77,25 +98,54 @@ data class JfaWsTextMessage(val event: JfaWsEventType, val data: JfaWsTextMessag
         /**
          * Returns JSON string containing serialized DTO of the message
          */
+        @OptIn(ExperimentalSerializationApi::class)
         fun fromDomain(message: TextConversationMessage): String {
-            // TODO Convert domain level text message to the API model and serialize to JSON string
-            return "Implement Me"
+            val jfaTextMessage = JfaWsTextMessage(
+                event = JfaWsEventType.CHAT_USER_MESSAGE,
+                data = JfaWsTextMessageData (
+                    type = JfaWsPayloadDataType.TEXT_DATA,
+                    messageId = message.messageId,
+                    timeStamp = message.timeStamp.toString(),
+                    senderId = message.senderId,
+                    senderName = message.senderName,
+                    senderRole = null,
+                    senderAccountType = null,
+                    recipientId = null,
+                    recipientName = null,
+                    clientId = null,
+                    messageStatus = null,
+                    content = message.content
+                )
+            )
+            val format = Json { explicitNulls = false }
+            return format.encodeToString(serializer(), jfaTextMessage)
         }
     }
 }
 
 @Serializable
 data class JfaWsTextMessageData(
-    val type: JfaWsPayloadDataType = JfaWsPayloadDataType.TEXT_DATA,
+    val type: JfaWsPayloadDataType,
     val messageId: String,
     val timeStamp: String,
     val senderId: String,
     val senderName: String,
-    val content: String,
+    val senderRole: JfaWsRoleType?,
+    val senderAccountType: JfaWsAccountType?,
+    val recipientId: String?,
+    val recipientName: String?,
+    val clientId: String?,
+    val messageStatus: JfaWsTextMessageStatus?,
+    val content: String
 ) {
     fun toDomain(): TextConversationMessage {
-        // TODO Convert this message DTO to its domain counterpart object
-        return TextConversationMessage.empty()
+        return TextConversationMessage(
+            messageId = messageId,
+            timeStamp = Instant.parse(timeStamp),
+            senderId = senderId,
+            senderName = senderName,
+            content = content
+        )
     }
 }
 
@@ -130,23 +180,40 @@ data class JfaWsUserListItem(
     val connectionStatus: JfaWsParticipantConnectionStatus
 ) {
     fun toDomain(): TextConversationParticipant {
-        // TODO Map JfaWsUserListItem to TextConversationParticipant
-        val roleTypeDomain = try { PersonRole.valueOf(roleType.name) }
-            catch (_: Throwable) { PersonRole.ADVISER }
-        val onlineStatusDomain = when(connectionStatus) {
-            JfaWsParticipantConnectionStatus.OPEN -> PersonOnlineStatus.OPEN
-            JfaWsParticipantConnectionStatus.BUSY -> PersonOnlineStatus.BUSY
-            JfaWsParticipantConnectionStatus.CLOSE -> PersonOnlineStatus.OFFLINE
-        }
         return TextConversationParticipant(
             id = userId,
             name = userName,
-            role = roleTypeDomain,
+            role = roleType.toDomain(),
             isPreferred = isPreferred,
-            onlineStatus = onlineStatusDomain
+            onlineStatus = connectionStatus.toDomain()
         )
     }
 }
+
+@Serializable
+data class JfaWsUserConnectionEventData(
+    val timeStamp: String,
+    val userId: String,
+    val accountType: JfaWsAccountType,
+    val roleType: JfaWsRoleType,
+    val userName: String,
+    val isPreferred: Boolean,
+    val status: JfaWsParticipantConnectionStatus
+): JfaWsPayloadData(JfaWsPayloadDataType.USER_CONNECTION_DATA) {
+    fun toDomain() = TextConversationParticipant(
+        id = userId,
+        role = roleType.toDomain(),
+        name = userName,
+        isPreferred = isPreferred,
+        onlineStatus = status.toDomain()
+    )
+}
+@Serializable
+data class JfaWsUserActivationEventData(
+    val timeStamp: String,
+    val recipientId: String?,
+    val senderId: String?,
+): JfaWsPayloadData(JfaWsPayloadDataType.USER_ACTIVATE_DATA)
 
 // endregion
 // region Error Message

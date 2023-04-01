@@ -3,12 +3,14 @@ package com.fusion.shared.data.remote.justfa.repositories
 import com.fusion.shared.data.remote.justfa.wsapi.*
 import com.fusion.shared.domain.models.TextConversationMessage
 import com.fusion.shared.domain.models.TextConversationParticipant
+import com.fusion.shared.domain.models.TextConversationParticipantsList
 import com.fusion.shared.domain.repositories.TextConversationService
 import com.fusion.shared.framework.resultOf
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.*
+import kotlinx.datetime.Clock
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -28,8 +30,11 @@ class JfaTextConversationService : TextConversationService, KoinComponent {
 
     override val listOfParticipantsFlow get() = _listOfParticipantsFlow.asStateFlow()
     private val _listOfParticipantsFlow =
-        MutableStateFlow<Result<List<TextConversationParticipant>>>(Result.success(listOf()))
+        MutableStateFlow(Result.success(TextConversationParticipantsList()))
 
+    override val participantConnectionFlow get() = _participantConnectionFlow.asStateFlow()
+    private val _participantConnectionFlow =
+        MutableStateFlow(Result.success(TextConversationParticipant.none()))
     override val incomingMessagesFlow get() = _incomingMessagesFlow.asStateFlow()
     private val _incomingMessagesFlow =
         MutableStateFlow(Result.success(TextConversationMessage.empty()))
@@ -77,6 +82,8 @@ class JfaTextConversationService : TextConversationService, KoinComponent {
             }
             when (eventType) {
                 JfaWsEventType.USERS_LIST -> processUserListResponseMessage(dataElement)
+                JfaWsEventType.USER_ACTIVATE -> updateOnParticipantActivatedConversation(dataElement)
+                JfaWsEventType.USER_CONNECTION -> updateOnParticipantConnected(dataElement)
                 JfaWsEventType.CHAT_USER_MESSAGE -> processTextConversationMessage(dataElement)
                 JfaWsEventType.ERROR -> handleApiLevelError(dataElement)
                 else -> {
@@ -91,10 +98,29 @@ class JfaTextConversationService : TextConversationService, KoinComponent {
         Json.decodeFromJsonElement(JfaWsUserListResponseData.serializer(), dataElement)
     }.onSuccess { userListResponseData ->
         _listOfParticipantsFlow.value = Result.success(
-            userListResponseData.users.map { it.toDomain() }
+            TextConversationParticipantsList(
+                participants = userListResponseData.users.map { it.toDomain() },
+                isLoaded = true
+            )
         )
     }.onFailure {
         _listOfParticipantsFlow.value = Result.failure(it)
+    }
+
+    private fun updateOnParticipantActivatedConversation(dataElement: JsonElement) {
+        // This is to update visual "Read" status of the participant's messages, or to indicate
+        // the participant opened chat at their side. Not supported yet in the UI.
+    }
+
+    /**
+     * Update UI to show that a participant came online and can take part in the conversation
+     */
+    private fun updateOnParticipantConnected(dataElement: JsonElement) = resultOf {
+        Json.decodeFromJsonElement(JfaWsUserConnectionEventData.serializer(), dataElement)
+    }.onSuccess {
+        _participantConnectionFlow.value = Result.success(it.toDomain())
+    }.onFailure {
+        _participantConnectionFlow.value = Result.failure(it)
     }
 
     private fun processTextConversationMessage(dataElement: JsonElement) = resultOf {
@@ -116,18 +142,28 @@ class JfaTextConversationService : TextConversationService, KoinComponent {
     }
 
     /**
+     * Notify other conversation parties we are online.
+     */
+    override suspend fun notifySessionActive() {
+        webSocketChannel.sendTextMessage(Json.encodeToString(JfaWsMessage(
+            event = JfaWsEventType.USER_ACTIVATE,
+            data = JfaWsUserActivationEventData(
+                timeStamp = Clock.System.now().toString(),
+                recipientId = null,
+                senderId = null
+            )
+        )))
+    }
+
+    /**
      *  Request list of contacts of the principal through web socket channel
      */
     override suspend fun requestAllContacts() {
         webSocketChannel.sendTextMessage(Json.encodeToString(JfaWsUserListRequest()))
     }
 
-    override suspend fun requestOnlineContacts() {
-        TODO("Not yet implemented")
-    }
-
     override suspend fun requestMessagingHistory() {
-        TODO("Not yet implemented")
+        // TODO Implement requestMessagingHistory or better getMessagingHistory
     }
 
     override suspend fun sendMessage(message: TextConversationMessage) {

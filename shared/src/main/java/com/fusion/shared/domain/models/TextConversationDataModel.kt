@@ -14,8 +14,9 @@ data class TextConversationMessage (
     val senderName: String,
 
     val content: String,
+    val status: TextConversationMessageStatus = TextConversationMessageStatus.UNREAD,
 
-    val isEmpty: Boolean = false
+    val isNotEmpty: Boolean = true
 ) {
     val timeFormatted: String get() {
         val l = timeStamp.toLocalDateTime(TimeZone.currentSystemDefault())
@@ -25,7 +26,7 @@ data class TextConversationMessage (
     companion object {
         fun empty() = TextConversationMessage(
             "", Instant.DISTANT_PAST, "", "", "",
-            isEmpty = true
+            isNotEmpty = false
         )
     }
 }
@@ -38,7 +39,18 @@ enum class PersonRole {
     ASSISTANT
 }
 
-enum class PersonOnlineStatus {  OPEN, BUSY, OFFLINE }
+enum class PersonOnlineStatus {
+    OPEN, BUSY, OFFLINE
+}
+
+enum class TextConversationMessageStatus {
+    UNREAD, READ
+}
+
+data class TextConversationParticipantsList (
+    val participants: List<TextConversationParticipant>? = null,
+    val isLoaded: Boolean = false
+)
 
 data class TextConversationParticipant (
     val id: String,
@@ -46,4 +58,10 @@ data class TextConversationParticipant (
     val role: PersonRole,
     val isPreferred: Boolean,
     val onlineStatus: PersonOnlineStatus
-)
+) {
+    fun isNone() = id.isEmpty()
+    companion object {
+        fun none() = TextConversationParticipant(
+            "", "", PersonRole.SUPPORT, false, PersonOnlineStatus.OFFLINE)
+    }
+}
