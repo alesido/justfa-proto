@@ -32,6 +32,7 @@ import com.fusion.android.framework.findActivity
 import com.fusion.android.theme.Capitana
 import com.fusion.android.theme.JBlue
 import com.fusion.android.theme.JustFaStarterTheme
+import com.fusion.shared.BuildConfig
 import com.fusion.shared.presenters.user.session.UserSessionPresenter
 import com.fusion.shared.presenters.user.session.UserSessionStage.*
 import kotlinx.coroutines.flow.collectLatest
@@ -73,8 +74,10 @@ fun LoginPage(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        val username = remember { mutableStateOf(TextFieldValue()) }
-        val password = remember { mutableStateOf(TextFieldValue()) }
+        val username = remember { mutableStateOf(TextFieldValue(
+            if (BuildConfig.DEBUG) "kent.black@test.com" else ""))}
+        val password = remember { mutableStateOf(TextFieldValue(
+            if (BuildConfig.DEBUG) "aA123456789" else "")) }
         val focusManager = LocalFocusManager.current
 
         Text(text = "Please sign in to your JustFA account with your e-mail and password",
@@ -88,7 +91,10 @@ fun LoginPage(
                 fontSize = 14.sp, fontFamily = Capitana))},
             value = username.value,
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
-            onValueChange = { username.value = it })
+            onValueChange = { username.value = it },
+
+
+        )
 
         Spacer(modifier = Modifier.height(20.dp))
         TextField(
