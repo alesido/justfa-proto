@@ -25,6 +25,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.fusion.android.components.JustFaFailureScreen
 import com.fusion.android.components.JustFaPageTop
 import com.fusion.android.conversation.ConversationActivity
 import com.fusion.android.framework.FunctionalityNotAvailablePopup
@@ -35,7 +36,6 @@ import com.fusion.android.theme.JustFaStarterTheme
 import com.fusion.shared.BuildConfig
 import com.fusion.shared.presenters.user.session.UserSessionPresenter
 import com.fusion.shared.presenters.user.session.UserSessionStage.*
-import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.get
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -45,20 +45,23 @@ fun LoginPage(
 ) {
     val context = LocalContext.current
 
-    LaunchedEffect(key1 = userSessionViewModel) {
-        userSessionViewModel.sessionStateFlow.collectLatest {
-            when (it.stage) {
-                INITIAL -> {}
-                AUTHORIZATION -> TODO()
-                ESTABLISHED -> {
-                    context.findActivity()?.let { a ->
-                        ConversationActivity.start(a)
-                        a.finish()
-                    }
-                }
-                FAILED -> TODO()
+    val loginState by userSessionViewModel.sessionStateFlow.collectAsState()
+    when (loginState.stage) {
+        ESTABLISHED -> {
+            context.findActivity()?.let { a ->
+                ConversationActivity.start(a)
+                a.finish()
             }
         }
+        FAILURE -> {
+            JustFaFailureScreen(
+                loginState.error,
+                retry = {
+                    userSessionViewModel.retryLogin()
+                })
+            return
+        }
+        else -> {}
     }
 
     var functionalityNotAvailablePopupShown by remember { mutableStateOf(false) }
@@ -92,8 +95,6 @@ fun LoginPage(
             value = username.value,
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
             onValueChange = { username.value = it },
-
-
         )
 
         Spacer(modifier = Modifier.height(20.dp))

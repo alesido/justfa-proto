@@ -43,51 +43,6 @@ fun ProgressScreen(text: String?) {
 }
 
 @Composable
-fun FailureScreen(text: String?, configure: () -> Unit, retry: () -> Unit) {
-    val activity = LocalContext.current.findActivity()
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(20.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = text?: "",
-            color = Color.Red,
-            style = TextStyle(fontSize = 16.sp, fontFamily = Capitana, fontWeight = FontWeight.Bold),
-            modifier = Modifier.padding(40.dp, 40.dp, 40.dp, 0.dp)
-        )
-        Box(modifier = Modifier.padding(40.dp, 40.dp, 40.dp, 0.dp)) {
-            Button(
-                onClick = { configure() },
-                shape = RoundedCornerShape(8.dp),
-                modifier = Modifier.fillMaxWidth().height(50.dp) ) {
-                Text(text = "Change Configuration")
-            }
-        }
-        Box(modifier = Modifier.padding(40.dp, 20.dp, 40.dp, 0.dp)) {
-            Button(
-                onClick = { retry() },
-                shape = RoundedCornerShape(8.dp),
-                modifier = Modifier.fillMaxWidth().height(50.dp) ) {
-                Text(text = "Retry")
-            }
-        }
-        Box(modifier = Modifier.padding(40.dp, 20.dp, 40.dp, 0.dp)) {
-            Button(
-                onClick = { activity?.finish() },
-                shape = RoundedCornerShape(8.dp),
-                modifier = Modifier.fillMaxWidth().height(50.dp) ) {
-                Text(text = "Cancel")
-            }
-        }
-    }
-
-    JustFaPageTop()
-}
-
-@Composable
 fun ConversationClosedScreen() {
     Column(
         modifier = Modifier

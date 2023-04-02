@@ -18,7 +18,7 @@ interface AccountService {
      *
      * Legacy (temporary) method to start user session. To be replaced with a real OAuth flow.
      */
-    suspend fun login(username: String, password: String): Flow<Account?>
+    suspend fun login(username: String, password: String): Account
 
     /**
      * * User authorization
@@ -26,7 +26,7 @@ interface AccountService {
      * Desired (future) method to start user session where user credentials received
      * by an external application via its authorization UI.
      */
-    suspend fun authorise(): Flow<Account?>
+    suspend fun authorise(): Account
 
 
     suspend fun currentAccount(): Account?

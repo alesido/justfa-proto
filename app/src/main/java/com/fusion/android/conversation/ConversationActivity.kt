@@ -14,6 +14,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
+import com.fusion.android.components.JustFaFailureScreen
 import com.fusion.android.theme.JustFaStarterTheme
 import com.fusion.shared.presenters.conversation.text.TextConversationPresenter
 import com.fusion.shared.presenters.conversation.text.TextConversationStage
@@ -64,10 +65,7 @@ class ConversationActivity : ComponentActivity() {
                             }
 
                             TextConversationStage.FAILURE -> {
-                                FailureScreen(
-                                    conversationState.error, // TODO Add failure screen text
-                                    configure = { },
-                                    retry = { })
+                                JustFaFailureScreen(conversationState.error)
                             }
 
                             TextConversationStage.CLOSED -> {
