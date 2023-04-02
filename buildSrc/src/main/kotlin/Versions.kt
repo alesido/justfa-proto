@@ -44,12 +44,12 @@ object Versions {
     const val constraintLayout = "2.1.4"
 
     // compose
-    const val compose = "1.3.3"
+    const val compose = "1.4.0"
     const val material = "1.9.0-alpha02"
     const val material3 = "1.0.1"
     const val materialIcons = "1.4.0-rc01"
     const val googleFonts = "1.3.3"
-    const val composeActivity = "1.6.1"
+    const val composeActivity = "1.7.0"
     const val compose_constraint = "1.0.0-rc01"
     const val accompanist = "0.28.0"
     const val navigation = "2.6.0-alpha07"

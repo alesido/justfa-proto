@@ -38,7 +38,8 @@ object AndroidDependencies {
     const val composeActivity =
         "androidx.activity:activity-compose:${Versions.composeActivity}"
     const val composeUi = "androidx.compose.ui:ui:${Versions.compose}"
-    const val composeTooling = "androidx.compose.ui:ui-tooling-preview:${Versions.compose}"
+    const val composeTooling = "androidx.compose.ui:ui-tooling:${Versions.compose}"
+    const val composeToolingPreview = "androidx.compose.ui:ui-tooling-preview:${Versions.compose}"
 
     // jetpack compose, material theming
     const val material = "com.google.android.material:material:1.9.0-alpha02"

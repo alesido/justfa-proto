@@ -92,7 +92,8 @@ dependencies {
     // jetpack compose, core
     implementation(AndroidDependencies.composeActivity)
     implementation(AndroidDependencies.composeUi)
-    implementation(AndroidDependencies.composeTooling)
+    debugImplementation(AndroidDependencies.composeTooling)
+    implementation(AndroidDependencies.composeToolingPreview)
 
     // jetpack compose, material theming
     implementation(AndroidDependencies.material)
