@@ -1,5 +1,6 @@
-package com.fusion.shared.data.remote.justfa.wsapi
+package com.fusion.shared.data.remote.justfa.repositories
 
+import com.fusion.shared.data.remote.justfa.wsapi.JfaWebSocketChannel
 import com.fusion.shared.domain.repositories.CommunicationCenterService
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject

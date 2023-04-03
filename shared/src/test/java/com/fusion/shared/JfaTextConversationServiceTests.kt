@@ -3,7 +3,7 @@ package com.fusion.shared
 import com.fusion.shared.data.remote.framework.oauth.BearerTokenStorage
 import com.fusion.shared.data.remote.justfa.repositories.JfaAccountService
 import com.fusion.shared.data.remote.justfa.repositories.JfaTextConversationService
-import com.fusion.shared.data.remote.justfa.wsapi.JfaCommunicationCenterService
+import com.fusion.shared.data.remote.justfa.repositories.JfaCommunicationCenterService
 import com.fusion.shared.di.sharedModule
 import io.ktor.client.plugins.auth.providers.*
 import kotlinx.coroutines.runBlocking

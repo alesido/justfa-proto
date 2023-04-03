@@ -5,7 +5,7 @@ import com.fusion.shared.data.remote.justfa.client.buildKtorClient
 import com.fusion.shared.data.remote.framework.oauth.BearerTokenStorage
 import com.fusion.shared.data.remote.justfa.repositories.JfaAccountService
 import com.fusion.shared.data.remote.justfa.repositories.JfaTextConversationService
-import com.fusion.shared.data.remote.justfa.wsapi.JfaCommunicationCenterService
+import com.fusion.shared.data.remote.justfa.repositories.JfaCommunicationCenterService
 import com.fusion.shared.data.remote.justfa.wsapi.JfaWebSocketChannel
 import com.fusion.shared.domain.repositories.AccountService
 import com.fusion.shared.domain.repositories.CommunicationCenterService
