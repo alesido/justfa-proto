@@ -88,3 +88,15 @@ data class TextConversationParticipant (
             "", "", PersonRole.SUPPORT, false, PersonOnlineStatus.OFFLINE)
     }
 }
+
+data class TextConversationHistoryPage(
+    val pageMessages: List<TextConversationMessage>,
+    val pageNumber: Int,
+    val totalItems: Int,
+)
+data class TextConversationHistory(
+    val loadedMessages: List<TextConversationMessage>,
+    val totalMessages: Int,
+    val pageSize: Int,
+    val lastLoadedPageNumber: Int,
+)

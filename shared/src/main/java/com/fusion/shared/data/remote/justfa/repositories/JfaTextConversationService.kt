@@ -1,9 +1,13 @@
 package com.fusion.shared.data.remote.justfa.repositories
 
+import com.fusion.shared.data.remote.justfa.api.conversation.JfaConversationApi
+import com.fusion.shared.data.remote.justfa.models.*
 import com.fusion.shared.data.remote.justfa.wsapi.*
+import com.fusion.shared.domain.models.TextConversationHistoryPage
 import com.fusion.shared.domain.models.TextConversationMessage
 import com.fusion.shared.domain.models.TextConversationParticipant
 import com.fusion.shared.domain.models.TextConversationParticipantsList
+import com.fusion.shared.domain.repositories.AccountService
 import com.fusion.shared.domain.repositories.TextConversationService
 import com.fusion.shared.framework.resultOf
 import kotlinx.coroutines.CoroutineScope
@@ -23,10 +27,8 @@ import org.koin.core.component.inject
 class JfaTextConversationService : TextConversationService, KoinComponent {
 
     private val webSocketChannel: JfaWebSocketChannel by inject()
-
-    override val initialMessagesFlow get() = _initialMessagesFlow.asStateFlow()
-    private val _initialMessagesFlow =
-        MutableStateFlow<Result<List<TextConversationMessage>>>(Result.success(listOf()))
+    private val conversationApi = JfaConversationApi()
+    private val accountService: AccountService by inject()
 
     override val listOfParticipantsFlow get() = _listOfParticipantsFlow.asStateFlow()
     private val _listOfParticipantsFlow =
@@ -162,8 +164,15 @@ class JfaTextConversationService : TextConversationService, KoinComponent {
         webSocketChannel.sendTextMessage(Json.encodeToString(JfaWsUserListRequest()))
     }
 
-    override suspend fun requestMessagingHistory() {
-        // TODO Implement requestMessagingHistory or better getMessagingHistory
+    override suspend fun loadMessagingHistoryPage(page: Int, pageSize: Int)
+    : Result<TextConversationHistoryPage> {
+        val currentAccount = accountService.currentAccount()
+            ?: return Result.failure(Throwable("You have to be logged in to get your chat history!"))
+        return resultOf {
+            val dto = conversationApi.getTextConversationHistory(
+                currentAccount.person.id, page, pageSize)
+            dto.toDomain()
+        }
     }
 
     override suspend fun sendMessage(message: TextConversationMessage) {

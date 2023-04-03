@@ -28,7 +28,7 @@ class TextConversationPresenter: KoinComponent {
     private val _conversationFlow = MutableStateFlow(TextConversationState.initial())
 
     // TODO Set history loaded flag to false when the feature gets implemented
-    private var isHistoryLoaded = true
+    private var isHistoryLoaded = false
 
     init {
         startSession()
@@ -42,7 +42,6 @@ class TextConversationPresenter: KoinComponent {
             // prepare to track the events
             awaitParticipantsList()
             setToTrackParticipantsConnectivity()
-            setupConversationHistoryPaging()
             setToAcceptIncomingMessages()
 
             // start conversation session
@@ -65,8 +64,8 @@ class TextConversationPresenter: KoinComponent {
 
     private suspend fun prepareConversation() = resultOf {
         textConversationService.notifySessionActive()
-        textConversationService.requestMessagingHistory()
         textConversationService.requestAllContacts()
+        setupConversationHistoryPaging()
         // responses to "request" calls expected to come later, with incoming messages
         // TODO Set timeouts on the WS API requests
     }.onFailure { onError(it) }
@@ -161,21 +160,23 @@ class TextConversationPresenter: KoinComponent {
     }
 
     private fun setupConversationHistoryPaging() {
-        // prepare to accept loaded messaging history
-        textConversationService.initialMessagesFlow
-            .onEach {
-                it.onSuccess { messages ->
-                    _conversationFlow.value = _conversationFlow.value.withInsertedMessages(messages)
-                    isHistoryLoaded = true
-                    val isParticipantsLoaded = _conversationFlow.value.participants != null
-                    _conversationFlow.value = _conversationFlow.value.copy(
-                        stage = if (isParticipantsLoaded) READY
-                        else STARTING
-                    )
-                }.onFailure { e -> onError(e) }
+        // load 1st pageful of messaging history
+        viewModelScope.launch {
+            resultOf {
+                textConversationService.loadMessagingHistoryPage(0, 40)
+                    .onSuccess {
+                        _conversationFlow.value = _conversationFlow.value
+                            .withInsertedMessages(it.pageMessages)
+                        isHistoryLoaded = true
+                        val isParticipantsLoaded = _conversationFlow.value.participants != null
+                        _conversationFlow.value = _conversationFlow.value.copy(
+                            stage = if (isParticipantsLoaded) READY
+                            else STARTING
+                        )
+                    }
+                    .onFailure { e -> onError(e) }
             }
-            .catch { onError(it) }
-            .launchIn(viewModelScope)
+        }
     }
 
     private fun setToAcceptIncomingMessages() {
@@ -218,7 +219,7 @@ class TextConversationPresenter: KoinComponent {
     }.onFailure { onError(it) }
 
     private fun onError(e: Throwable) {
-        onError(e.message.toString())
+        onError(e.message.toString() + e.cause?.message)
     }
 
     private fun onError(messageText: String) {

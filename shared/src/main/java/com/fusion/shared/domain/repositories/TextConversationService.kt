@@ -1,16 +1,12 @@
 package com.fusion.shared.domain.repositories
 
+import com.fusion.shared.domain.models.TextConversationHistoryPage
 import com.fusion.shared.domain.models.TextConversationMessage
 import com.fusion.shared.domain.models.TextConversationParticipant
 import com.fusion.shared.domain.models.TextConversationParticipantsList
 import kotlinx.coroutines.flow.StateFlow
 
 interface TextConversationService {
-
-    /**
-     * History of messages, i.e. list of messages exchanged before current session is started.
-     */
-    val initialMessagesFlow: StateFlow<Result<List<TextConversationMessage>>>
 
     /**
      * It is flow to deliver response on a request of the list of conversation participants,
@@ -37,6 +33,7 @@ interface TextConversationService {
      * whether the contact is preferable.
      */
     suspend fun requestAllContacts()
-    suspend fun requestMessagingHistory()
+    suspend fun loadMessagingHistoryPage(page: Int, pageSize: Int)
+    : Result<TextConversationHistoryPage>
     suspend fun sendMessage(message: TextConversationMessage)
 }
