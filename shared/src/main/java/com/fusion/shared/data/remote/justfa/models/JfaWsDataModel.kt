@@ -1,16 +1,10 @@
-package com.fusion.shared.data.remote.justfa.wsapi
+package com.fusion.shared.data.remote.justfa.models
 
-import com.fusion.shared.domain.models.PersonOnlineStatus
-import com.fusion.shared.domain.models.PersonRole
-import com.fusion.shared.domain.models.TextConversationMessage
-import com.fusion.shared.domain.models.TextConversationParticipant
+import com.fusion.shared.domain.models.*
 import kotlinx.datetime.Instant
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import java.time.format.DateTimeFormatter
 
 enum class JfaWsEventType {
 
@@ -81,7 +75,9 @@ enum class JfaWsParticipantConnectionStatus {
 }
 
 enum class JfaWsTextMessageStatus {
-    UNREAD, READ
+    UNREAD, READ;
+    fun toDomain() = if (this == READ)
+        TextConversationMessageStatus.READ else TextConversationMessageStatus.UNREAD
 }
 
 @Serializable
@@ -144,7 +140,9 @@ data class JfaWsTextMessageData(
             timeStamp = Instant.parse(timeStamp),
             senderId = senderId,
             senderName = senderName,
-            content = content
+            content = content,
+            status = messageStatus?.let { messageStatus.toDomain() }
+                ?: TextConversationMessageStatus.UNREAD
         )
     }
 }

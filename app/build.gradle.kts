@@ -119,7 +119,7 @@ dependencies {
 
 
     // time
-    implementation(AndroidDependencies.jodaTime)
+    //implementation(AndroidDependencies.jodaTime)
 
     testImplementation(AndroidDependencies.jUnit)
     androidTestImplementation(AndroidDependencies.androidxJUnit)

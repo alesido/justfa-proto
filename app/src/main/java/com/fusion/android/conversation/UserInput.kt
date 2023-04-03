@@ -47,11 +47,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.AlternateEmail
-import androidx.compose.material.icons.outlined.Duo
-import androidx.compose.material.icons.outlined.InsertPhoto
-import androidx.compose.material.icons.outlined.Mood
-import androidx.compose.material.icons.outlined.Place
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -271,6 +267,7 @@ private fun UserInputSelector(
             .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
+        /**
         InputSelectorButton(
             onClick = { onSelectorChange(InputSelector.EMOJI) },
             icon = Icons.Outlined.Mood,
@@ -283,21 +280,24 @@ private fun UserInputSelector(
             selected = currentInputSelector == InputSelector.DM,
             description = stringResource(id = R.string.dm_desc)
         )
+
         InputSelectorButton(
             onClick = { onSelectorChange(InputSelector.PICTURE) },
             icon = Icons.Outlined.InsertPhoto,
             selected = currentInputSelector == InputSelector.PICTURE,
             description = stringResource(id = R.string.attach_photo_desc)
         )
+        */
         InputSelectorButton(
             onClick = { onSelectorChange(InputSelector.MAP) },
-            icon = Icons.Outlined.Place,
+            icon = Icons.Outlined.AttachFile,
             selected = currentInputSelector == InputSelector.MAP,
             description = stringResource(id = R.string.map_selector_desc)
         )
+
         InputSelectorButton(
             onClick = { onSelectorChange(InputSelector.PHONE) },
-            icon = Icons.Outlined.Duo,
+            icon = Icons.Outlined.Call,
             selected = currentInputSelector == InputSelector.PHONE,
             description = stringResource(id = R.string.videochat_desc)
         )
