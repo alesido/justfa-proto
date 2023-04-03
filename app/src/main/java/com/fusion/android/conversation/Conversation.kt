@@ -33,6 +33,7 @@ import com.fusion.shared.domain.models.TextConversationMessage
 import com.fusion.shared.presenters.conversation.text.TextConversationState
 import kotlinx.coroutines.launch
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ConversationPage(
@@ -72,8 +73,8 @@ fun ConversationPage(
                     // Use navigationBarsPadding() imePadding() and , to move the input panel above both the
                     // navigation bar, and on-screen keyboard (IME)
                     // TODO Fix too big padding, of IMEI or Navigation Bars
-//                    modifier = Modifier
-//                        .navigationBarsPadding()
+                    modifier = Modifier
+                        .navigationBarsPadding()
 //                        .imePadding(),
                 )
             }
@@ -168,28 +169,28 @@ fun Messages(
                 .fillMaxSize()
         ) {
             for (index in messages.indices) {
-                val prevAuthor = messages.getOrNull(index - 1)?.senderName
-                val nextAuthor = messages.getOrNull(index + 1)?.senderName
-                val content = messages[index]
-                val isFirstMessageByAuthor = prevAuthor != content.senderName
-                val isLastMessageByAuthor = nextAuthor != content.senderName
+                val message = messages[index]
+                val prevMessage = messages.getOrNull(index - 1)
+                val nextMessage = messages.getOrNull(index + 1)
 
-                // Hardcode day dividers for simplicity
-                if (index == messages.size - 1) {
+                val prevAuthor = prevMessage?.senderName
+                val nextAuthor = nextMessage?.senderName
+
+                val isFirstMessageByAuthor = prevAuthor != message.senderName
+                val isLastMessageByAuthor = nextAuthor != message.senderName
+
+
+                if (prevMessage != null && message.isADayBefore(prevMessage)) {
                     item {
-                        DayHeader("day header example")
-                    }
-                } else if (index == 2) {
-                    item {
-                        DayHeader("Today")
+                        DayHeader(message.dayDateShort())
                     }
                 }
 
                 item {
                     Message(
                         onAuthorClick = {  },
-                        message = content,
-                        isSenderMe = content.senderName == author,
+                        message = message,
+                        isSenderMe = message.senderName == author,
                         isFirstMessageByAuthor = isFirstMessageByAuthor,
                         isLastMessageByAuthor = isLastMessageByAuthor
                     )

@@ -1,9 +1,8 @@
 package com.fusion.shared.domain.models
 
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
+import io.ktor.util.*
+import kotlinx.datetime.*
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import java.util.*
 
 data class TextConversationMessage (
@@ -23,7 +22,31 @@ data class TextConversationMessage (
         return "${l.hour}:${l.minute}"
     }
 
+    private val localDateTime = timeStamp.toLocalDateTime(TimeZone.currentSystemDefault())
+
+    private val isToday = localDateTime.date == Clock.System.todayIn(TimeZone.currentSystemDefault())
+
+    /**
+     *  True, if this instant belongs to a day before the given test message
+     */
+    fun isADayBefore(test: TextConversationMessage) =
+        localDateTime.date.toEpochDays() - test.localDateTime.date.toEpochDays() < 0
+
+    /**
+     * True, if this instant belongs to a day after given test instant
+     */
+    fun isADayAfter(test: TextConversationMessage) =
+        localDateTime.date.toEpochDays() - test.localDateTime.date.toEpochDays() > 0
+
+    fun dayDateShort(): String = if (isToday) "Today" else with(localDateTime) {
+        "${calendarNameFormat(dayOfWeek.name)}, ${calendarNameFormat(month.name)} $dayOfMonth"
+    }
+
+    private fun calendarNameFormat(s: String) = s.substring(0,3).toLowerCasePreservingASCIIRules()
+        .replaceFirstChar { c -> c.uppercase() }
+
     companion object {
+
         fun empty() = TextConversationMessage(
             "", Instant.DISTANT_PAST, "", "", "",
             isNotEmpty = false
